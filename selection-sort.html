@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>選擇排序法視覺化</title>
+    <style>
+        /* CSS 樣式設定 */
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background-color: #f0f9ff; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 90%; max-width: 900px; margin-bottom: 20px; }
+        h2 { border-bottom: 2px solid #e11d48; padding-bottom: 5px; color: #e11d48; }
+        pre { background-color: #f1f5f9; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: monospace; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #e11d48; color: white; }
+        
+        /* 視覺化圖表樣式 */
+        .array-container { display: flex; align-items: flex-end; height: 180px; margin: 20px 0; border-bottom: 2px solid #333; }
+        .bar { width: 25px; margin: 0 3px; background-color: #f43f5e; color: white; text-align: center; border-radius: 4px 4px 0 0; transition: height 0.2s, background-color 0.2s; font-size: 0.8rem; }
+        .controls { display: flex; gap: 15px; margin-top: 15px; }
+        button { padding: 10px 20px; cursor: pointer; background: #e11d48; color: white; border: none; border-radius: 6px; font-size: 1rem; }
+        button:hover { background: #be123c; }
+        button:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<!-- 一、操作原理區塊 -->
+<div class="section">
+    <h2>一、操作原理</h2>
+    <p>選擇排序法會重覆地從未排序的部分中找到最小的元素，然後把它放到已排序部分的最後面。</p>
+</div>
+
+<!-- 二、虛擬代碼區塊 -->
+<div class="section">
+    <h2>二、虛擬代碼</h2>
+    <pre>
+procedure selectionSort( A : list of sortable items )
+    n = length(A)
+    for i = 0 to n-2 do
+        minIndex = i
+        for j = i+1 to n-1 do
+            if A[j] < A[minIndex] then
+                minIndex = j
+            end if
+        end for
+        swap( A[i], A[minIndex] )
+    end for
+end procedure
+    </pre>
+</div>
+
+<!-- 三、複雜度分析區塊 -->
+<div class="section">
+    <h2>三、複雜度分析</h2>
+    <table>
+        <tr><th>項目</th><th>複雜度</th></tr>
+        <tr><td>平均時間複雜度</td><td>O(n²)</td></tr>
+        <tr><td>最壞時間複雜度</td><td>O(n²)</td></tr>
+        <tr><td>最好時間複雜度</td><td>O(n²)</td></tr>
+        <tr><td>空間複雜度</td><td>O(1)</td></tr>
+    </table>
+</div>
+
+<!-- 四、動態視覺化區塊 -->
+<div class="section">
+    <h2>四、動態視覺化操作</h2>
+    <div class="array-container" id="array-container">
+        <!-- 長條圖將透過 JavaScript 產生在這裡 -->
+    </div>
+    <div class="controls">
+        <button id="start-btn">開始排序</button>
+        <button id="reset-btn">重設</button>
+    </div>
+</div>
+
+<script>
+    // JavaScript 視覺化與排序邏輯
+    const arrayContainer = document.getElementById('array-container');
+    const startBtn = document.getElementById('start-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const initialArray = [50, 20, 70, 10, 90, 40, 30, 80, 60];
+    let workingArray = [...initialArray];
+
+    function renderArray(array) {
+        arrayContainer.innerHTML = '';
+        array.forEach(value => {
+            const bar = document.createElement('div');
+            bar.classList.add('bar');
+            bar.style.height = `${value * 1.8}px`;
+            bar.textContent = value;
+            arrayContainer.appendChild(bar);
+        });
+    }
+
+    renderArray(workingArray);
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // 選擇排序視覺化邏輯
+    async function selectionSortVisualizer() {
+        const bars = document.getElementsByClassName('bar');
+        let n = workingArray.length;
+        
+        for (let i = 0; i < n - 1; i++) {
+            let minIndex = i;
+            // 標示目前要放最小值的位子 (藍色)
+            bars[i].style.backgroundColor = '#0ea5e9';
+
+            for (let j = i + 1; j < n; j++) {
+                // 標示正在比較的長條 (黃色)
+                bars[j].style.backgroundColor = '#fbbf24';
+                await sleep(150);
+
+                if (workingArray[j] < workingArray[minIndex]) {
+                    // 恢復之前的最小值長條顏色
+                    if(minIndex !== i) bars[minIndex].style.backgroundColor = '#f43f5e';
+                    minIndex = j;
+                    // 標示新的最小值長條 (紫色)
+                    bars[minIndex].style.backgroundColor = '#a855f7';
+                } else {
+                     // 恢復比較完的長條顏色
+                     bars[j].style.backgroundColor = '#f43f5e';
+                }
+            }
+
+            if(minIndex !== i) {
+                // 交換陣列數值
+                [workingArray[i], workingArray[minIndex]] = [workingArray[minIndex], workingArray[i]];
+                
+                // 同步更新長條高度和文字
+                bars[i].style.height = `${workingArray[i] * 1.8}px`;
+                bars[i].textContent = workingArray[i];
+                bars[minIndex].style.height = `${workingArray[minIndex] * 1.8}px`;
+                bars[minIndex].textContent = workingArray[minIndex];
+                
+                 // 恢復最小值長條顏色
+                 bars[minIndex].style.backgroundColor = '#f43f5e';
+            }
+            
+            // 標示已排序完成的長條 (綠色)
+            bars[i].style.backgroundColor = '#10b981';
+        }
+        bars[n-1].style.backgroundColor = '#10b981'; // 最後一個元素標示綠色
+
+        startBtn.disabled = false;
+        resetBtn.disabled = false;
+    }
+
+    startBtn.addEventListener('click', () => {
+        startBtn.disabled = true;
+        resetBtn.disabled = true;
+        selectionSortVisualizer();
+    });
+
+    resetBtn.addEventListener('click', () => {
+        workingArray = [...initialArray];
+        renderArray(workingArray);
+    });
+</script>
+
+</body>
+</html>
