@@ -2,28 +2,86 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>排序演算法</title>
+    <title>排序演算法報告 - 選單</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; background-color: #f0f9ff; }
-        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
-        h1 { color: #0ea5e9; margin-bottom: 30px; }
-        .links { display: flex; flex-direction: column; gap: 15px; }
-        a { display: block; padding: 10px 20px; text-decoration: none; color: white; background-color: #0ea5e9; border-radius: 8px; font-size: 1.1rem; transition: background-color 0.2s; }
-        a:hover { background-color: #0284c7; }
+        /* 1. 設置深藍漸層背景 & 置中對齊 */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 使用更現代的字體 */
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; /* 垂直置中 */
+            min-height: 100vh; /* 確保佔滿視窗高度 */
+            margin: 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); /* 深藍漸層 */
+            color: #fff;
+        }
+
+        /* 2. 設置毛玻璃質感的容器 */
+        .container { 
+            background: rgba(255, 255, 255, 0.1); /* 半透明白 */
+            padding: 40px 50px; 
+            border-radius: 20px; /* 更圓潤的角 */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* 深一點的陰影增加立體感 */
+            backdrop-filter: blur(15px); /* 毛玻璃模糊效果 */
+            -webkit-backdrop-filter: blur(15px); /* 兼容 Safari */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* 淡淡的邊框 */
+            text-align: center; 
+            width: 90%;
+            max-width: 450px; /* 限制最大寬度 */
+        }
+
+        /* 3. 標題樣式 */
+        h1 { 
+            color: #fff; /* 標題改成白色 */
+            margin-top: 0;
+            margin-bottom: 35px; 
+            font-size: 2.2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2); /* 增加一點點文字陰影 */
+        }
+
+        /* 4. 按鈕連結容器 */
+        .links { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 18px; /* 按鈕間距 */
+        }
+
+        /* 5. 華麗版按鈕樣式 */
+        .links a { 
+            display: block; 
+            padding: 15px 25px; 
+            text-decoration: none; 
+            color: #1e3c72; /* 深藍色文字 */
+            background-color: #fff; /* 白色背景 */
+            border-radius: 30px; /* 膠囊形狀圓角 */
+            font-size: 1.15rem; 
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* 按鈕陰影 */
+            transition: all 0.3s ease; /* 所有的過渡效果 */
+        }
+
+        /* 6. 按鈕懸停(Hover)特效 */
+        .links a:hover { 
+            background-color: #ddd; /* 懸停時變灰色 */
+            transform: translateY(-3px) scale(1.03); /* 向上浮動並微幅放大 */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3); /* 陰影變深 */
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>排序演算法報告</h1>
-    <div class="links">
-        <a href="bubble-sort.html">前往氣泡排序頁面</a>
-        <a href="selection-sort.html">前往選擇排序頁面</a>
-        <a href="insertion-sort.html">前往插入排序頁面</a>
-        <a href="merge-sort.html">前往合併排序頁面</a>
-        <a href="xxx-sort.html">前往快速排序頁面</a>
+    <div class="container">
+        <h1>排序演算法報告</h1>
+        
+        <div class="links">
+            <a href="bubble-sort.html">前往氣泡排序頁面</a>
+            <a href="selection-sort.html">前往選擇排序頁面</a>
+            <a href="insertion-sort.html">前往插入排序頁面</a>
+            <a href="merge-sort.html">前往合併排序頁面</a>
+            <a href="quick-sort.html">前往快速排序頁面</a>
+        </div>
     </div>
-</div>
 
 </body>
 </html>
