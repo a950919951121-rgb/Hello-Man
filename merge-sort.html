@@ -7,121 +7,96 @@
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             display: flex; flex-direction: column; align-items: center; padding: 20px; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
             color: #fff; min-height: 100vh; margin: 0;
         }
         .section { 
             background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 15px; 
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); backdrop-filter: blur(8px); 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); 
             border: 1px solid rgba(255, 255, 255, 0.2); width: 90%; max-width: 900px; margin-bottom: 25px; 
-            text-align: center;
         }
-        h1 { border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px; letter-spacing: 2px; }
+        h1, h2 { border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px; text-align: center; }
         .array-container { 
-            display: flex; align-items: flex-end; justify-content: center;
-            height: 250px; margin: 30px 0; padding: 10px;
-            background: rgba(0,0,0,0.2); border-radius: 10px;
+            display: flex; align-items: flex-end; justify-content: center; height: 250px; 
+            margin: 30px 0; border-bottom: 2px solid #fff; 
         }
         .bar { 
-            width: 35px; margin: 0 5px; 
-            background: linear-gradient(to top, #ff9a9e 0%, #fad0c4 100%); 
-            color: #333; text-align: center; border-radius: 5px 5px 0 0; 
-            transition: transform 0.2s, background 0.2s; 
-            font-size: 0.8rem; font-weight: bold; 
-            display: flex; justify-content: center; align-items: flex-end; padding-bottom: 5px;
-        }
-        .bar.comparing { background: #fbc2eb !important; transform: scale(1.1); }
-        .bar.sorted { background: #a18cd1 !important; }
-        .controls { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
-        button { 
-            padding: 10px 25px; cursor: pointer; background: #fff; color: #764ba2; 
-            border: none; border-radius: 20px; font-weight: bold; transition: 0.3s;
-        }
-        button:hover { background: #eee; transform: translateY(-2px); }
-        button:disabled { background: #aaa; cursor: not-allowed; }
-        .nav-links { margin-top: 20px; }
-        .nav-links a { text-decoration: none; margin: 0 10px; }
-    </style>
-</head>
-<body>
-    <div class="section">
-        <h1>Merge Sort 可視化動畫</h1>
-        <div class="array-container" id="container"></div>
-        <div class="controls">
-            <button id="startBtn">開始合併排序</button>
-            <button id="resetBtn">重設陣列</button>
-        </div>
-        <div class="nav-links">
-            <a href="home.html"><button>回首頁</button></a>
-            <a href="bubble-sort.html"><button>氣泡排序</button></a>
-        </div>
-    </div>
-    <script>
-        const container = document.getElementById('container');
-        const startBtn = document.getElementById('startBtn');
-        const resetBtn = document.getElementById('resetBtn');
+            width: 30px; margin: 0 4px; background: linear-gradient(to top, #4facfe 0%, #00f2fe 100%); 
+            color: #333; text-align: center; border-radius: 5px 5px 0 0;
+            <script>
+        const container = document.getElementById('array-container');
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
         let array = [];
 
-        // 初始化陣列
-        function resetArray() {
+        // 初始化隨機陣列
+        function initArray() {
             array = [];
             container.innerHTML = '';
-            for (let i = 0; i < 15; i++) {
-                array.push(Math.floor(Math.random() * 90) + 10);
+            for (let i = 0; i < 12; i++) {
+                const val = Math.floor(Math.random() * 80) + 15;
+                array.push(val);
                 const bar = document.createElement('div');
-                bar.classList.add('bar');
-                bar.style.height = `${array[i] * 2}px`;
-                bar.textContent = array[i];
+                bar.className = 'bar';
+                bar.style.height = `${val * 2.5}px`;
+                bar.textContent = val;
                 container.appendChild(bar);
             }
             startBtn.disabled = false;
         }
 
-        // 延遲函數
-        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 
-        // 更新畫面
-        function updateBars(arr, colorIndices = [], isSorted = false) {
+        // 更新長條圖視覺狀態
+        async function updateUI(currentArr, comparingIdx = [], mergingIdx = [], isDone = false) {
             const bars = document.querySelectorAll('.bar');
-            arr.forEach((val, i) => {
-                bars[i].style.height = `${val * 2}px`;
+            currentArr.forEach((val, i) => {
+                bars[i].style.height = `${val * 2.5}px`;
                 bars[i].textContent = val;
-                bars[i].classList.remove('comparing', 'sorted');
-                if (colorIndices.includes(i)) bars[i].classList.add('comparing');
-                if (isSorted) bars[i].classList.add('sorted');
+                bars[i].classList.remove('comparing', 'merging', 'sorted');
+                
+                if (comparingIdx.includes(i)) bars[i].classList.add('comparing');
+                if (mergingIdx.includes(i)) bars[i].classList.add('merging');
+                if (isDone) bars[i].classList.add('sorted');
             });
         }
 
-        // 合併排序核心
-        async function mergeSort(arr, start, end) {
-            if (start >= end) return;
-            const mid = Math.floor((start + end) / 2);
-            await mergeSort(arr, start, mid);
-            await mergeSort(arr, mid + 1, end);
-            await merge(arr, start, mid, end);
+        // 合併排序遞迴函數
+        async function mergeSort(arr, l, r) {
+            if (l >= r) return;
+            const m = Math.floor((l + r) / 2);
+            await mergeSort(arr, l, m);
+            await mergeSort(arr, m + 1, r);
+            await merge(arr, l, m, r);
         }
 
-        async function merge(arr, start, mid, end) {
-            let temp = [];
-            let i = start, j = mid + 1;
+        async function merge(arr, l, m, r) {
+            let leftPart = arr.slice(l, m + 1);
+            let rightPart = arr.slice(m + 1, r + 1);
+            let i = 0, j = 0, k = l;
 
-            while (i <= mid && j <= end) {
-                updateBars(arr, [i, j]);
-                await sleep(300);
-                if (arr[i] <= arr[j])
-                    // 綁定按鈕事件
+            while (i < leftPart.length && j < rightPart.length
+            // 綁定按鈕動作
         startBtn.addEventListener('click', async () => {
             startBtn.disabled = true;
             resetBtn.disabled = true;
-            await mergeSort(array, 0, array.length - 1);
-            updateBars(array, [], true); // 完成後變色
+            
+            // 複製一份陣列來進行排序，避免直接修改原始參考
+            let tempArray = [...array];
+            await mergeSort(tempArray, 0, tempArray.length - 1);
+            
+            // 排序完成，全部變綠色
+            await updateUI(tempArray, [], [], true);
+            
             resetBtn.disabled = false;
         });
 
-        resetBtn.addEventListener('click', resetArray);
+        resetBtn.addEventListener('click', () => {
+            initArray();
+        });
 
-        // 網頁載入時先執行一次初始化
-        resetArray();
+        // 初始載入
+        initArray();
     </script>
 </body>
 </html>
