@@ -2,86 +2,157 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>排序演算法視覺化</title>
+    <title>氣泡排序法與說明</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; }
-        .container { background: #f4f4f4; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .array-container { display: flex; align-items: flex-end; height: 150px; margin: 20px 0; border-bottom: 2px solid #333; }
-        .bar { width: 20px; margin: 0 2px; background-color: #007bff; color: white; text-align: center; border-radius: 3px 3px 0 0; transition: height 0.2s, background-color 0.2s; }
-        button { padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; font-size: 1rem; }
-        button:hover { background: #0056b3; }
+        /* CSS 樣式設定 */
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background-color: #f0f9ff; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 90%; max-width: 900px; margin-bottom: 20px; }
+        h2 { border-bottom: 2px solid #0ea5e9; padding-bottom: 5px; color: #0ea5e9; }
+        pre { background-color: #f1f5f9; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: monospace; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #0ea5e9; color: white; }
+        
+        /* 視覺化圖表樣式 */
+        .array-container { display: flex; align-items: flex-end; height: 180px; margin: 20px 0; border-bottom: 2px solid #333; }
+        .bar { width: 25px; margin: 0 3px; background-color: #38bdf8; color: white; text-align: center; border-radius: 4px 4px 0 0; transition: height 0.2s, background-color 0.2s; font-size: 0.8rem; }
+        .controls { display: flex; gap: 15px; margin-top: 15px; }
+        button { padding: 10px 20px; cursor: pointer; background: #0ea5e9; color: white; border: none; border-radius: 6px; font-size: 1rem; }
+        button:hover { background: #0284c7; }
+        button:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>氣泡排序法視覺化</h2>
+<!-- 一、操作原理區塊 -->
+<div class="section">
+    <h2>一、操作原理</h2>
+    <p>氣泡排序法重覆比較兩兩相鄰的元素。如果它們的順序錯誤，就將它們交換。這個過程會一直重複，直到大的元素像氣泡一樣搬到陣列的最後面。</p>
+</div>
+
+<!-- 二、虛擬代碼區塊 -->
+<div class="section">
+    <h2>二、虛擬代碼</h2>
+    <pre>
+procedure bubbleSort( A : list of sortable items )
+    n = length(A)
+    repeat
+        swapped = false
+        for i = 1 to n-1 inclusive do
+            if A[i-1] > A[i] then
+                swap( A[i-1], A[i] )
+                swapped = true
+            end if
+        end for
+        n = n - 1
+    until not swapped
+end procedure
+    </pre>
+</div>
+<!-- 三、複雜度分析區塊 -->
+<div class="section">
+    <h2>三、複雜度分析</h2>
+    <table>
+        <tr><th>項目</th><th>複雜度</th></tr>
+        <tr><td>平均時間複雜度</td><td>O(n²)</td></tr>
+        <tr><td>最壞時間複雜度</td><td>O(n²)</td></tr>
+        <tr><td>最好時間複雜度</td><td>O(n) (當陣列已經排序好時)</td></tr>
+        <tr><td>空間複雜度</td><td>O(1) (只需要額外的常數空間)</td></tr>
+    </table>
+</div>
+
+<!-- 四、動態視覺化區塊 -->
+<div class="section">
+    <h2>四、動態視覺化操作</h2>
     <div class="array-container" id="array-container">
-        <!-- 這裡是圖表長條圖顯示的地方 -->
+        <!-- 長條圖將透過 JavaScript 產生在這裡 -->
     </div>
-    <button id="start-btn">開始排序</button>
+    <div class="controls">
+        <button id="start-btn">開始排序</button>
+        <button id="reset-btn">重設</button>
+    </div>
 </div>
 
 <script>
+    // JavaScript 視覺化與排序邏輯
     const arrayContainer = document.getElementById('array-container');
     const startBtn = document.getElementById('start-btn');
-    let sourceArray = [64, 34, 25, 12, 22, 11, 90];
+    const resetBtn = document.getElementById('reset-btn');
+    // 初始陣列資料
+    const initialArray = [50, 20, 70, 10, 90, 40, 30, 80, 60];
+    // 實際用來排序的陣列 (目前複製初始資料)
+    let workingArray = [...initialArray];
 
-    // 初始化圖表
+    // 產生長條圖的函式
     function renderArray(array) {
-        arrayContainer.innerHTML = '';
+        arrayContainer.innerHTML = ''; // 先清空目前的內容
         array.forEach(value => {
             const bar = document.createElement('div');
             bar.classList.add('bar');
-            bar.style.height = `${value * 1.5}px`; // 根據數值調整高度
-            bar.textContent = value;
+            bar.style.height = `${value * 1.8}px`; // 根據數值調整長條高度
+            bar.textContent = value; // 長條上顯示數值
             arrayContainer.appendChild(bar);
         });
     }
 
-    renderArray(sourceArray);
+    // 初始化顯示
+    renderArray(workingArray);
 
     // 等待函式，用來控制動畫速度
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // 氣泡排序視覺化邏輯
-    async function bubbleSortVisualizer(arr) {
+    // 氣泡排序視覺化邏輯 (使用 async/await 來製作動畫)
+    async function bubbleSortVisualizer() {
         const bars = document.getElementsByClassName('bar');
-        let n = arr.length;
+        let n = workingArray.length;
+        
         for (let i = 0; i < n - 1; i++) {
             for (let j = 0; j < n - i - 1; j++) {
-                // 標示正在比較的長條
-                bars[j].style.backgroundColor = 'red';
-                bars[j + 1].style.backgroundColor = 'red';
-                await sleep(200);
+                // 標示正在比較的長條 (紅色)
+                bars[j].style.backgroundColor = '#e11d48'; 
+                bars[j + 1].style.backgroundColor = '#e11d48';
+                await sleep(150); // 動畫速度
 
-                if (arr[j] > arr[j + 1]) {
+                // 比較並進行交換
+                if (workingArray[j] > workingArray[j + 1]) {
                     // 交換陣列數值
-                    [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-
-                    // 更新圖表高度和文字
-                    bars[j].style.height = `${arr[j] * 1.5}px`;
-                    bars[j].textContent = arr[j];
-                    bars[j + 1].style.height = `${arr[j + 1] * 1.5}px`;
-                    bars[j + 1].textContent = arr[j + 1];
+                    [workingArray[j], workingArray[j + 1]] = [workingArray[j + 1], workingArray[j]];
+                    
+                    // 同步更新長條高度和文字
+                    bars[j].style.height = `${workingArray[j] * 1.8}px`;
+                    bars[j].textContent = workingArray[j];
+                    bars[j + 1].style.height = `${workingArray[j + 1] * 1.8}px`;
+                    bars[j + 1].textContent = workingArray[j + 1];
+                    await sleep(150); // 動畫速度
                 }
 
-                // 比較完畢，恢復顏色
-                bars[j].style.backgroundColor = '#007bff';
-                bars[j + 1].style.backgroundColor = '#007bff';
+                // 比較完畢，恢復長條顏色 (天藍色)
+                bars[j].style.backgroundColor = '#38bdf8'; 
+                bars[j + 1].style.backgroundColor = '#38bdf8';
             }
-            // 標示已排序完成的長條
-            bars[n - 1 - i].style.backgroundColor = 'green';
+            // 標示已排序完成的長條 (綠色)
+            bars[n - 1 - i].style.backgroundColor = '#10b981';
         }
-        bars[0].style.backgroundColor = 'green'; // 最後一個元素
-        startBtn.disabled = false; // 排序完畢後重新啟用按鈕
+        bars[0].style.backgroundColor = '#10b981'; // 最後一個元素標示綠色
+
+        // 排序完畢後重新啟用按鈕
+        startBtn.disabled = false;
+        resetBtn.disabled = false;
     }
 
+    // 開始排序按鈕事件
     startBtn.addEventListener('click', () => {
-        startBtn.disabled = true; // 開始排序時先禁用按鈕
-        bubbleSortVisualizer([...sourceArray]); // 複製陣列來進行排序，避免更動原始資料
+        startBtn.disabled = true; // 開始時禁用按鈕
+        resetBtn.disabled = true;
+        bubbleSortVisualizer();
+    });
+
+    // 重設按鈕事件
+    resetBtn.addEventListener('click', () => {
+        workingArray = [...initialArray]; // 恢復為原始陣列
+        renderArray(workingArray); // 重新產生圖表
     });
 </script>
 
