@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>選擇排序法視覺化</title>
+    <title>插入排序法視覺化</title>
     <style>
         /* CSS 樣式設定 - 華麗升級版 */
         body { 
@@ -11,15 +11,15 @@
             flex-direction: column; 
             align-items: center; 
             padding: 20px; 
-            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%); /* 漸層背景 */
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); /* 漸層背景 */
             color: #333;
             min-height: 100vh;
         }
         .section { 
-            background: rgba(255, 255, 255, 0.8); /* 半透明白色背景 */
+            background: rgba(255, 255, 255, 0.8); 
             padding: 25px; 
             border-radius: 15px; 
-            box-shadow: 0 8px 32px rgba(244, 63, 94, 0.2); /* 陰影效果 */
+            box-shadow: 0 8px 32px rgba(161, 140, 209, 0.3); /* 陰影效果 */
             backdrop-filter: blur(4px); 
             border: 1px solid rgba(255, 255, 255, 0.5);
             width: 90%; 
@@ -27,9 +27,9 @@
             margin-bottom: 25px; 
         }
         h1, h2 { 
-            border-bottom: 2px solid #f43f5e; 
+            border-bottom: 2px solid #a855f7; 
             padding-bottom: 10px; 
-            color: #e11d48; 
+            color: #7e22ce; 
             text-transform: uppercase;
             letter-spacing: 2px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
@@ -55,23 +55,22 @@
             text-align: left; 
         }
         th { 
-            background-color: #f43f5e; 
+            background-color: #a855f7; 
             color: white; 
         }
-        
         /* 視覺化圖表樣式 */
         .array-container { 
             display: flex; 
             align-items: flex-end; 
             height: 200px; 
             margin: 30px 0; 
-            border-bottom: 2px solid #e11d48; 
+            border-bottom: 2px solid #7e22ce; 
         }
         .bar { 
             width: 28px; 
             margin: 0 4px; 
-            background: linear-gradient(to bottom, #ff758c 0%, #ff7eb3 100%); /* 長條圖漸層 */
-            color: white; 
+            background: linear-gradient(to top, #96fbc4 0%, #f9f586 100%); /* 長條圖漸層 */
+            color: #333; 
             text-align: center; 
             border-radius: 8px 8px 0 0; 
             transition: height 0.3s, background 0.3s, transform 0.2s; 
@@ -85,14 +84,14 @@
         }
         .bar:hover {
             transform: translateY(-5px); /* 滑鼠懸停浮起效果 */
-            background: linear-gradient(to bottom, #84fab0 0%, #8fd3f4 100%); /* 滑鼠懸停變色 */
-            color: #333;
+            background: linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%); /* 滑鼠懸停變色 */
+            color: white;
         }
         .controls { display: flex; gap: 20px; margin-top: 20px; }
         button { 
             padding: 12px 28px; 
             cursor: pointer; 
-            background: #f43f5e; 
+            background: #a855f7; 
             color: white; 
             border: none; 
             border-radius: 25px; 
@@ -100,10 +99,10 @@
             font-weight: bold;
             text-transform: uppercase;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
+            box-shadow: 0 4px 15px rgba(126, 34, 206, 0.4);
         }
         button:hover { 
-            background: #e11d48; 
+            background: #7e22ce; 
             transform: scale(1.05);
         }
         button:disabled { 
@@ -118,34 +117,33 @@
 <body>
 
 <div class="section">
-    <h1>選擇排序法 (Selection Sort)</h1>
+    <h1>插入排序法 (Insertion Sort) - 華麗版</h1>
 </div>
 
 <!-- 一、操作原理區塊 -->
 <div class="section">
     <h2>一、操作原理</h2>
-    <p>選擇排序法會重覆地從未排序的部分中找到最小的元素，然後把它放到已排序部分的最後面。</p>
+    <p>插入排序法逐個將未排序的元素插入到已排序部分中的正確位置，就像在整理撲克牌一樣。</p>
 </div>
 
 <!-- 二、虛擬代碼區塊 -->
 <div class="section">
     <h2>二、虛擬代碼</h2>
     <pre>
-procedure selectionSort( A : list of sortable items )
+procedure insertionSort( A : list of sortable items )
     n = length(A)
-    for i = 0 to n-2 do
-        minIndex = i
-        for j = i+1 to n-1 do
-            if A[j] < A[minIndex] then
-                minIndex = j
-            end if
-        end for
-        swap( A[i], A[minIndex] )
+    for i = 1 to n-1 do
+        key = A[i]
+        j = i - 1
+        while j >= 0 and A[j] > key do
+            A[j+1] = A[j]
+            j = j - 1
+        end while
+        A[j+1] = key
     end for
 end procedure
     </pre>
 </div>
-
 <!-- 三、複雜度分析區塊 -->
 <div class="section">
     <h2>三、複雜度分析</h2>
@@ -153,7 +151,7 @@ end procedure
         <tr><th>項目</th><th>複雜度</th></tr>
         <tr><td>平均時間複雜度</td><td>O(n²)</td></tr>
         <tr><td>最壞時間複雜度</td><td>O(n²)</td></tr>
-        <tr><td>最好時間複雜度</td><td>O(n²)</td></tr>
+        <tr><td>最好時間複雜度</td><td>O(n) (當陣列已經排序好時)</td></tr>
         <tr><td>空間複雜度</td><td>O(1)</td></tr>
     </table>
 </div>
@@ -172,7 +170,7 @@ end procedure
 
 <div class="section controls">
     <a href="home.html"><button>回主頁面</button></a>
-    <a href="insertion-sort.html"><button>前往插入排序</button></a>
+    <a href="merge-sort.html"><button>前往合併排序</button></a>
 </div>
 
 <script>
@@ -200,51 +198,47 @@ end procedure
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // 選擇排序視覺化邏輯
-    async function selectionSortVisualizer() {
+    // 插入排序視覺化邏輯
+    async function insertionSortVisualizer() {
         const bars = document.getElementsByClassName('bar');
         let n = workingArray.length;
         
-        for (let i = 0; i < n - 1; i++) {
-            let minIndex = i;
-            // 標示目前要放最小值的位子 (藍色漸層)
-            bars[i].style.background = 'linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%)';
+        for (let i = 1; i < n; i++) {
+            let key = workingArray[i];
+            let j = i - 1;
+            
+            // 標示目前的 key (黃色)
+            bars[i].style.background = '#fbbf24';
+            await sleep(150);
 
-            for (let j = i + 1; j < n; j++) {
-                // 標示正在比較的長條 (黃色)
-                bars[j].style.background = '#fbbf24';
+            while (j >= 0 && workingArray[j] > key) {
+                // 標示正在比較的元素 (藍色漸層)
+                bars[j].style.background = 'linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%)';
                 await sleep(150);
 
-                if (workingArray[j] < workingArray[minIndex]) {
-                    // 恢復之前的最小值長條顏色
-                    if(minIndex !== i) bars[minIndex].style.background = 'linear-gradient(to bottom, #ff758c 0%, #ff7eb3 100%)';
-                    minIndex = j;
-                    // 標示新的最小值長條 (紫色漸層)
-                    bars[minIndex].style.background = 'linear-gradient(to bottom, #a855f7 0%, #d8b4fe 100%)';
-                } else {
-                     // 恢復比較完的長條顏色
-                     bars[j].style.background = 'linear-gradient(to bottom, #ff758c 0%, #ff7eb3 100%)';
-                }
-            }
-
-            if(minIndex !== i) {
-                // 交換陣列數值
-                [workingArray[i], workingArray[minIndex]] = [workingArray[minIndex], workingArray[i]];
+                // 移動數值
+                workingArray[j+1] = workingArray[j];
+                bars[j+1].style.height = `${workingArray[j+1] * 1.8}px`;
+                bars[j+1].textContent = workingArray[j+1];
                 
-                // 同步更新長條高度和文字
-                bars[i].style.height = `${workingArray[i] * 1.8}px`;
-                bars[i].textContent = workingArray[i];
-                bars[minIndex].style.height = `${workingArray[minIndex] * 1.8}px`;
-                bars[minIndex].textContent = workingArray[minIndex];
-                
-                 // 恢復最小值長條顏色
-                 bars[minIndex].style.background = 'linear-gradient(to bottom, #ff758c 0%, #ff7eb3 100%)';
+                // 恢復顏色 (紫粉漸層)
+                bars[j].style.background = 'linear-gradient(to top, #96fbc4 0%, #f9f586 100%)';
+                j = j - 1;
             }
+            // 插入 key 值
+            workingArray[j+1] = key;
+            bars[j+1].style.height = `${workingArray[j+1] * 1.8}px`;
+            bars[j+1].textContent = workingArray[j+1];
             
-            // 標示已排序完成的長條 (綠色漸層)
-            bars[i].style.background = 'linear-gradient(to bottom, #10b981 0%, #34d399 100%)';
+            // 恢復 key 的顏色
+            bars[i].style.background = 'linear-gradient(to top, #96fbc4 0%, #f9f586 100%)';
+            
+            // 標示已初步排序的部分為綠色漸層
+            for(let k = 0; k <= i; k++){
+                 bars[k].style.background = 'linear-gradient(to bottom, #10b981 0%, #34d399 100%)';
+            }
+            await sleep(150);
         }
-        bars[n-1].style.background = 'linear-gradient(to bottom, #10b981 0%, #34d399 100%)'; // 最後一個元素標示綠色
 
         startBtn.disabled = false;
         resetBtn.disabled = false;
@@ -253,7 +247,7 @@ end procedure
     startBtn.addEventListener('click', () => {
         startBtn.disabled = true;
         resetBtn.disabled = true;
-        selectionSortVisualizer();
+        insertionSortVisualizer();
     });
 
     resetBtn.addEventListener('click', () => {
@@ -264,8 +258,8 @@ end procedure
 
 </body>
 </html>
-                <div class="controls">
+<div class="controls">
     <a href="home.html"><button>回主頁面</button></a>
-    <a href="selection-sort.html"><button>前往氣泡排序</button></a>
-    <a href="selection-sort.html"><button>前往插入排序</button></a>
+    a href="selection-sort.html"><button>前往選擇排序</button></a>
+    <a href="selection-sort.html"><button>前往合併排序</button></a>
 </div>
