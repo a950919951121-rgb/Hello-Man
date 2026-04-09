@@ -2,30 +2,31 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>排序演算法報告 - 選單</title>
+    <title>排序演算法報告 - 亮麗選單</title>
     <style>
-        /* 1. 設置深藍漸層背景 & 置中對齊 */
+        /* 1. 設置亮色漸層背景 & 置中對齊 */
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 使用更現代的字體 */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 現代字體 */
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center; /* 垂直置中 */
             min-height: 100vh; /* 確保佔滿視窗高度 */
             margin: 0;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); /* 深藍漸層 */
-            color: #fff;
+            /* 亮藍色到白色的清爽漸層 */
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            color: #333; /* 文字使用深灰色，保持閱讀清晰 */
         }
 
-        /* 2. 設置毛玻璃質感的容器 */
+        /* 2. 設置全白、高透光的毛玻璃容器 */
         .container { 
-            background: rgba(255, 255, 255, 0.1); /* 半透明白 */
+            background: rgba(255, 255, 255, 0.4); /* 較亮、更透明的白 */
             padding: 40px 50px; 
-            border-radius: 20px; /* 更圓潤的角 */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* 深一點的陰影增加立體感 */
+            border-radius: 20px; /* 圓潤的角 */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* 輕盈的陰影 */
             backdrop-filter: blur(15px); /* 毛玻璃模糊效果 */
             -webkit-backdrop-filter: blur(15px); /* 兼容 Safari */
-            border: 1px solid rgba(255, 255, 255, 0.2); /* 淡淡的邊框 */
+            border: 1px solid rgba(255, 255, 255, 0.6); /* 更明亮的細邊框 */
             text-align: center; 
             width: 90%;
             max-width: 450px; /* 限制最大寬度 */
@@ -33,11 +34,11 @@
 
         /* 3. 標題樣式 */
         h1 { 
-            color: #fff; /* 標題改成白色 */
+            color: #1e88e5; /* 亮藍色標題 */
             margin-top: 0;
             margin-bottom: 35px; 
             font-size: 2.2rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2); /* 增加一點點文字陰影 */
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1); /* 輕微的文字陰影 */
         }
 
         /* 4. 按鈕連結容器 */
@@ -47,25 +48,25 @@
             gap: 18px; /* 按鈕間距 */
         }
 
-        /* 5. 華麗版按鈕樣式 */
+        /* 5. 亮麗版按鈕樣式 */
         .links a { 
             display: block; 
             padding: 15px 25px; 
             text-decoration: none; 
-            color: #1e3c72; /* 深藍色文字 */
-            background-color: #fff; /* 白色背景 */
+            color: #fff; /* 白色文字 */
+            background-color: #42a5f5; /* 亮藍色背景 */
             border-radius: 30px; /* 膠囊形狀圓角 */
             font-size: 1.15rem; 
             font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* 按鈕陰影 */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* 按鈕陰影 */
             transition: all 0.3s ease; /* 所有的過渡效果 */
         }
 
         /* 6. 按鈕懸停(Hover)特效 */
         .links a:hover { 
-            background-color: #ddd; /* 懸停時變灰色 */
+            background-color: #2196f3; /* 懸停時變深藍色 */
             transform: translateY(-3px) scale(1.03); /* 向上浮動並微幅放大 */
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3); /* 陰影變深 */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2); /* 陰影變深 */
         }
     </style>
 </head>
