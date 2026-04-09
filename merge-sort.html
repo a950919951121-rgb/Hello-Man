@@ -22,8 +22,41 @@
         }
         .bar { 
             width: 30px; margin: 0 4px; background: linear-gradient(to top, #4facfe 0%, #00f2fe 100%); 
-            color: #333; text-align: center; border-radius: 5px 5px 0 0;
-            <script>
+            color: #333; text-align: center; border-radius: 5px 5px 0 0; 
+            transition: height 0.3s, background 0.2s; font-size: 0.8rem; font-weight: bold;
+            display: flex; justify-content: center; align-items: flex-end; padding-bottom: 5px;
+        }
+        .bar.comparing { background: #ff0844 !important; transform: scale(1.1); }
+        .bar.merging { background: #f9d423 !important; }
+        .bar.sorted { background: #66ff00 !important; }
+        .controls { display: flex; gap: 15px; justify-content: center; margin: 20px 0; }
+        button { 
+            padding: 12px 25px; cursor: pointer; background: #fff; color: #1e3c72; 
+            border: none; border-radius: 25px; font-weight: bold; transition: 0.3s;
+        }
+        button:hover { background: #ddd; transform: scale(1.05); }
+        button:disabled { background: #777; cursor: not-allowed; }
+        .footer-nav { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; display: flex; justify-content: center; gap: 10px; }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <h1>Merge Sort 可視化說明</h1>
+        <p>合併排序法是一種典型的「分治法」(Divide and Conquer)。它會將陣列對半拆解，直到剩一個元素，再依序合併回正確的順序。</p>
+    </div>
+
+    <div class="section">
+        <div class="array-container" id="array-container"></div>
+        <div class="controls">
+            <button id="start-btn">開始排序動畫</button>
+            <button id="reset-btn">重新隨機陣列</button>
+        </div>
+        <div class="footer-nav">
+            <a href="home.html"><button>回主頁面</button></a>
+            <a href="bubble-sort.html"><button>前往氣泡排序</button></a>
+        </div>
+    </div>
+    <script>
         const container = document.getElementById('array-container');
         const startBtn = document.getElementById('start-btn');
         const resetBtn = document.getElementById('reset-btn');
@@ -33,6 +66,7 @@
         function initArray() {
             array = [];
             container.innerHTML = '';
+            // 產生 12 個隨機數值
             for (let i = 0; i < 12; i++) {
                 const val = Math.floor(Math.random() * 80) + 15;
                 array.push(val);
@@ -47,7 +81,7 @@
 
         const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 
-        // 更新長條圖視覺狀態
+        // 更新畫面函數
         async function updateUI(currentArr, comparingIdx = [], mergingIdx = [], isDone = false) {
             const bars = document.querySelectorAll('.bar');
             currentArr.forEach((val, i) => {
@@ -61,7 +95,7 @@
             });
         }
 
-        // 合併排序遞迴函數
+        // 合併排序遞迴
         async function mergeSort(arr, l, r) {
             if (l >= r) return;
             const m = Math.floor((l + r) / 2);
@@ -70,24 +104,52 @@
             await merge(arr, l, m, r);
         }
 
+        // 合併邏輯與動畫處理
         async function merge(arr, l, m, r) {
             let leftPart = arr.slice(l, m + 1);
             let rightPart = arr.slice(m + 1, r + 1);
             let i = 0, j = 0, k = l;
 
-            while (i < leftPart.length && j < rightPart.length
-            // 綁定按鈕動作
+            while (i < leftPart.length && j < rightPart.length) {
+                // 顯示正在比較的兩端元素 (紅色)
+                await updateUI(arr, [l + i, m + 1 + j]);
+                await sleep(400);
+
+                if (leftPart[i] <= rightPart[j]) {
+                    arr[k] = leftPart[i++];
+                } else {
+                    arr[k] = rightPart[j++];
+                }
+                // 顯示寫回陣列的動作 (黃色)
+                await updateUI(arr, [], [k]);
+                await sleep(200);
+                k++;
+            }
+
+            while (i < leftPart.length) {
+                arr[k] = leftPart[i++];
+                await updateUI(arr, [], [k]);
+                await sleep(200);
+                k++;
+            }
+            while (j < rightPart.length) {
+                arr[k] = rightPart[j++];
+                await updateUI(arr, [], [k]);
+                await sleep(200);
+                k++;
+            }
+        }
+
+        // 監聽按鈕點擊
         startBtn.addEventListener('click', async () => {
             startBtn.disabled = true;
             resetBtn.disabled = true;
             
-            // 複製一份陣列來進行排序，避免直接修改原始參考
             let tempArray = [...array];
             await mergeSort(tempArray, 0, tempArray.length - 1);
             
-            // 排序完成，全部變綠色
+            // 全部排序完成 (綠色)
             await updateUI(tempArray, [], [], true);
-            
             resetBtn.disabled = false;
         });
 
@@ -95,7 +157,7 @@
             initArray();
         });
 
-        // 初始載入
+        // 初始執行
         initArray();
     </script>
 </body>
