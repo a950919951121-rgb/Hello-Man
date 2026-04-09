@@ -2,55 +2,66 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>快速排序分析</title>
+    <title>快速排序分析 - 亮麗版</title>
     <style>
+        /* 1. 設置亮色漸層背景 */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             display: flex; flex-direction: column; align-items: center; padding: 20px; 
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
-            color: #fff; min-height: 100vh; margin: 0;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); 
+            color: #333; min-height: 100vh; margin: 0;
         }
+
+        /* 2. 亮色毛玻璃質感區塊 */
         .section { 
-            background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 15px; 
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); 
-            border: 1px solid rgba(255, 255, 255, 0.2); width: 90%; max-width: 900px; margin-bottom: 25px; 
+            background: rgba(255, 255, 255, 0.5); 
+            padding: 25px; border-radius: 15px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); 
+            backdrop-filter: blur(10px); 
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6); 
+            width: 90%; max-width: 900px; margin-bottom: 25px; 
         }
-        h1, h2 { border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px; }
+
+        h1, h2 { color: #1e88e5; border-bottom: 2px solid rgba(30, 136, 229, 0.3); padding-bottom: 10px; }
         p, li { line-height: 1.6; }
+
+        /* 程式碼區塊改為深色背景以利閱讀 */
         pre { 
-            background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 8px; 
-            color: #f8f8f2; overflow-x: auto; font-size: 0.9rem; line-height: 1.5;
+            background: #2c3e50; padding: 15px; border-radius: 8px; 
+            color: #ecf0f1; overflow-x: auto; font-size: 0.9rem; line-height: 1.5;
         }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: rgba(0,0,0,0.2); }
-        th, td { border: 1px solid rgba(255,255,255,0.2); padding: 12px; text-align: left; }
-        th { background: rgba(255,255,255,0.1); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: rgba(255,255,255,0.3); }
+        th, td { border: 1px solid rgba(0,0,0,0.1); padding: 12px; text-align: left; }
+        th { background: rgba(30, 136, 229, 0.1); color: #1e88e5; }
         
-        /* 視覺化區域 */
+        /* 視覺化區域樣式調整 */
         .array-container { 
             display: flex; align-items: flex-end; justify-content: center; height: 200px; 
-            margin: 20px 0; border-bottom: 2px solid #fff; 
+            margin: 20px 0; border-bottom: 2px solid #1e88e5; 
         }
         .bar { 
-            width: 28px; margin: 0 3px; background: linear-gradient(to top, #4facfe 0%, #00f2fe 100%); 
-            color: #333; text-align: center; border-radius: 5px 5px 0 0; 
+            width: 28px; margin: 0 3px; 
+            background: linear-gradient(to top, #42a5f5 0%, #90caf9 100%); 
+            color: #fff; text-align: center; border-radius: 5px 5px 0 0; 
             font-size: 0.8rem; font-weight: bold; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 5px;
             transition: height 0.3s, background 0.2s;
         }
         
         .controls { text-align: center; margin-bottom: 20px; }
         button { 
-            padding: 10px 20px; cursor: pointer; background: #fff; color: #1e3c72; 
+            padding: 10px 20px; cursor: pointer; 
+            background: #1e88e5; color: #fff; 
             border: none; border-radius: 20px; font-weight: bold; transition: 0.3s; margin: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        button:hover { background: #ddd; transform: scale(1.05); }
-        button:disabled { background: #777; cursor: not-allowed; }
+        button:hover { background: #1565c0; transform: scale(1.05); }
+        button:disabled { background: #bbb; cursor: not-allowed; }
 
         .footer-nav { 
-            border-top: 1px solid rgba(255,255,255,0.2); 
-            padding-top: 20px; 
-            display: flex; 
-            justify-content: center; 
-            gap: 15px; 
+            border-top: 1px solid rgba(0,0,0,0.1); padding-top: 20px; 
+            display: flex; justify-content: center; gap: 15px; 
         }
         a { text-decoration: none; }
     </style>
@@ -60,37 +71,26 @@
     <div class="section">
         <h1>快速排序法 (Quick Sort) 分析</h1>
         <h2>1. 操作原理</h2>
-        <p>快速排序法使用「基準點 (Pivot)」的概念進行分治：</p>
+        <p>快速排序法使用「基準點 (Pivot)」的概念進行分段排序：</p>
         <ul>
-            <li><strong>選擇基準 (Pivot)：</strong>在陣列中選取一個元素作為基準。</li>
-            <li><strong>分割 (Partition)：</strong>重新排列陣列，使比基準小的元素都在左邊，比基準大的都在右邊。</li>
-            <li><strong>遞迴排序：</strong>對基準點左右兩邊的子陣列重複上述步驟。</li>
+            <li><strong>選擇基準：</strong>選取一個元素作為 Pivot。</li>
+            <li><strong>分割：</strong>將陣列重新排列，小的在左，大的在右。</li>
+            <li><strong>遞迴：</strong>對左右兩邊重複執行。</li>
         </ul>
     </div>
 
     <div class="section">
-        <h2>2. 虛擬代碼 (Pseudo Code)</h2>
-        <pre>
-QUICK_SORT(A, low, high):
-    if low < high:
-        p = PARTITION(A, low, high)
-        QUICK_SORT(A, low, p - 1)
-        QUICK_SORT(A, p + 1, high)</pre>
-    </div>
-
-    <div class="section">
-        <h2>3. 複雜度分析</h2>
+        <h2>2. 複雜度分析</h2>
         <table>
             <tr><th>情況</th><th>時間複雜度</th></tr>
             <tr><td>最佳情況 (Best Case)</td><td>O(n log n)</td></tr>
             <tr><td>平均情況 (Average Case)</td><td>O(n log n)</td></tr>
-            <tr><td>最壞情況 (Worst Case)</td><td>O(n²) - 當陣列已排序時</td></tr>
-            <tr><td>空間複雜度</td><td>O(log n) - 遞迴呼叫堆疊</td></tr>
+            <tr><td>最壞情況 (Worst Case)</td><td>O(n²)</td></tr>
         </table>
     </div>
 
     <div class="section">
-        <h2>4. 視覺化演示</h2>
+        <h2>3. 視覺化演示</h2>
         <div class="array-container" id="array-container"></div>
         <div class="controls">
             <button id="start-btn">開始演示</button>
@@ -98,8 +98,8 @@ QUICK_SORT(A, low, high):
         </div>
 
         <div class="footer-nav">
-            <a href="home.html"><button>回主頁面</button></a>
-            <a href="merge-sort.html"><button>回合併排序</button></a>
+            <a href="index.html"><button>回主頁面</button></a>
+            <a href="merge-sort.html"><button>前往合併排序</button></a>
         </div>
     </div>
 
@@ -133,13 +133,13 @@ QUICK_SORT(A, low, high):
                 bars[i].textContent = val;
                 
                 if (i === pivotIdx) {
-                    bars[i].style.background = '#f9d423'; // 基準點：黃色
+                    bars[i].style.background = '#ffd54f'; // 基準點：鮮黃色
                 } else if (comparingIdx.includes(i)) {
-                    bars[i].style.background = '#ff0844'; // 比較中：紅色
+                    bars[i].style.background = '#ff5252'; // 比較中：鮮紅色
                 } else if (sortedIdxs.includes(i)) {
-                    bars[i].style.background = '#66ff00'; // 已排序：綠色
+                    bars[i].style.background = '#4caf50'; // 已排序：鮮綠色
                 } else {
-                    bars[i].style.background = 'linear-gradient(to top, #4facfe 0%, #00f2fe 100%)';
+                    bars[i].style.background = 'linear-gradient(to top, #42a5f5 0%, #90caf9 100%)';
                 }
             });
         }
@@ -147,7 +147,7 @@ QUICK_SORT(A, low, high):
         async function partition(arr, low, high) {
             let pivot = arr[high];
             let i = low - 1;
-            await updateUI(arr, high); // 標示基準點
+            await updateUI(arr, high);
             await sleep(400);
 
             for (let j = low; j < high; j++) {
@@ -179,7 +179,7 @@ QUICK_SORT(A, low, high):
             resetBtn.disabled = true;
             await quickSort(array, 0, array.length - 1);
             const bars = document.querySelectorAll('.bar');
-            bars.forEach(bar => bar.style.background = '#66ff00');
+            bars.forEach(bar => bar.style.background = '#4caf50');
             resetBtn.disabled = false;
         });
 
