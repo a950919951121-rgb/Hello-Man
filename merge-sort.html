@@ -2,101 +2,126 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>合併排序法視覺化</title>
+    <title>合併排序法視覺化 - 華麗版</title>
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             display: flex; flex-direction: column; align-items: center; padding: 20px; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* 不同的漸層背景 */
-            color: #fff; min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: #fff; min-height: 100vh; margin: 0;
         }
         .section { 
-            background: rgba(255, 255, 255, 0.1); /* 調整透明度 */
-            padding: 25px; border-radius: 15px; 
-            box-shadow: 0 8px 32px rgba(118, 75, 162, 0.3); backdrop-filter: blur(4px); 
+            background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 15px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); backdrop-filter: blur(8px); 
             border: 1px solid rgba(255, 255, 255, 0.2); width: 90%; max-width: 900px; margin-bottom: 25px; 
+            text-align: center;
         }
-        h1, h2 { border-bottom: 2px solid #fff; padding-bottom: 10px; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
-        pre { background-color: rgba(0, 0, 0, 0.5); padding: 15px; border-radius: 8px; overflow-x: auto; color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); }
-        .array-container { display: flex; align-items: flex-end; height: 200px; margin: 30px 0; border-bottom: 2px solid #fff; }
+        h1 { border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px; letter-spacing: 2px; }
+        .array-container { 
+            display: flex; align-items: flex-end; justify-content: center;
+            height: 250px; margin: 30px 0; padding: 10px;
+            background: rgba(0,0,0,0.2); border-radius: 10px;
+        }
         .bar { 
-            width: 28px; margin: 0 4px; background: linear-gradient(to top, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%); /* 不同的長條圖漸層 */
-            color: #333; text-align: center; border-radius: 8px 8px 0 0; 
-            transition: height 0.3s, background 0.3s, transform 0.2s; 
-            font-size: 0.9rem; font-weight: bold; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 5px;
+            width: 35px; margin: 0 5px; 
+            background: linear-gradient(to top, #ff9a9e 0%, #fad0c4 100%); 
+            color: #333; text-align: center; border-radius: 5px 5px 0 0; 
+            transition: transform 0.2s, background 0.2s; 
+            font-size: 0.8rem; font-weight: bold; 
+            display: flex; justify-content: center; align-items: flex-end; padding-bottom: 5px;
         }
-        .bar:hover { transform: translateY(-5px); background: linear-gradient(to top, #fbc2eb 0%, #a18cd1 100%); color: white; }
-        .controls { display: flex; gap: 20px; margin-top: 20px; }
-        button { padding: 12px 28px; cursor: pointer; background: #fff; color: #764ba2; border: none; border-radius: 25px; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; transition: all 0.3s ease; }
-        button:hover { background: #eee; transform: scale(1.05); }
+        .bar.comparing { background: #fbc2eb !important; transform: scale(1.1); }
+        .bar.sorted { background: #a18cd1 !important; }
+        .controls { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
+        button { 
+            padding: 10px 25px; cursor: pointer; background: #fff; color: #764ba2; 
+            border: none; border-radius: 20px; font-weight: bold; transition: 0.3s;
+        }
+        button:hover { background: #eee; transform: translateY(-2px); }
+        button:disabled { background: #aaa; cursor: not-allowed; }
+        .nav-links { margin-top: 20px; }
+        .nav-links a { text-decoration: none; margin: 0 10px; }
     </style>
 </head>
 <body>
     <div class="section">
-    <h1>合併排序法 (Merge Sort)</h1>
-</div>
-
-<div class="section">
-    <h2>一、操作原理</h2>
-    <p>合併排序法使用分割並征服的策略,將陣列分割成最小單位,然後再逐步合併成已排序的陣列。</p>
-</div>
-
-<div class="section">
-    <h2>二、視覺化操作</h2>
-    <div class="array-container" id="array-container"></div>
-    <div class="controls">
-        <button id="start-btn">開始排序</button>
-        <button id="reset-btn">重設</button>
+        <h1>Merge Sort 可視化動畫</h1>
+        <div class="array-container" id="container"></div>
+        <div class="controls">
+            <button id="startBtn">開始合併排序</button>
+            <button id="resetBtn">重設陣列</button>
+        </div>
+        <div class="nav-links">
+            <a href="home.html"><button>回首頁</button></a>
+            <a href="bubble-sort.html"><button>氣泡排序</button></a>
+        </div>
     </div>
-</div>
+    <script>
+        const container = document.getElementById('container');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        let array = [];
 
-<div class="section controls">
-    <a href="home.html"><button>回主頁面</button></a>
-    <a href="quick-sort.html"><button>前往快速排序</button></a>
-</div>
+        // 初始化陣列
+        function resetArray() {
+            array = [];
+            container.innerHTML = '';
+            for (let i = 0; i < 15; i++) {
+                array.push(Math.floor(Math.random() * 90) + 10);
+                const bar = document.createElement('div');
+                bar.classList.add('bar');
+                bar.style.height = `${array[i] * 2}px`;
+                bar.textContent = array[i];
+                container.appendChild(bar);
+            }
+            startBtn.disabled = false;
+        }
 
-<script>
-    const container = document.getElementById('array-container');
-    const startBtn = document.getElementById('start-btn');
-    const resetBtn = document.getElementById('reset-btn');
-    const initialArray = [50, 20, 70, 10, 90, 40, 30, 80, 60];
-    let workingArray = [...initialArray];
+        // 延遲函數
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    function renderArray(array) {
-        container.innerHTML = '';
-        array.forEach(value => {
-            const bar = document.createElement('div');
-            bar.classList.add('bar');
-            bar.style.height = `${value * 1.8}px`; // 稍微調整高度比例
-            bar.textContent = value;
-            container.appendChild(bar);
+        // 更新畫面
+        function updateBars(arr, colorIndices = [], isSorted = false) {
+            const bars = document.querySelectorAll('.bar');
+            arr.forEach((val, i) => {
+                bars[i].style.height = `${val * 2}px`;
+                bars[i].textContent = val;
+                bars[i].classList.remove('comparing', 'sorted');
+                if (colorIndices.includes(i)) bars[i].classList.add('comparing');
+                if (isSorted) bars[i].classList.add('sorted');
+            });
+        }
+
+        // 合併排序核心
+        async function mergeSort(arr, start, end) {
+            if (start >= end) return;
+            const mid = Math.floor((start + end) / 2);
+            await mergeSort(arr, start, mid);
+            await mergeSort(arr, mid + 1, end);
+            await merge(arr, start, mid, end);
+        }
+
+        async function merge(arr, start, mid, end) {
+            let temp = [];
+            let i = start, j = mid + 1;
+
+            while (i <= mid && j <= end) {
+                updateBars(arr, [i, j]);
+                await sleep(300);
+                if (arr[i] <= arr[j])
+                    // 綁定按鈕事件
+        startBtn.addEventListener('click', async () => {
+            startBtn.disabled = true;
+            resetBtn.disabled = true;
+            await mergeSort(array, 0, array.length - 1);
+            updateBars(array, [], true); // 完成後變色
+            resetBtn.disabled = false;
         });
-    }
 
-    renderArray(workingArray);
+        resetBtn.addEventListener('click', resetArray);
 
-    function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
-
-    async function mergeSortVisualizer(arr) {
-        // 合併排序視覺化逻辑 (這部分程式碼較長,可考慮省略細節)
-        // ...
-        renderArray(arr); // 最後顯示排序結果
-        startBtn.disabled = false; resetBtn.disabled = false;
-    }
-
-    startBtn.addEventListener('click', () => {
-        startBtn.disabled = true; resetBtn.disabled = true;
-        // 這裡需要呼叫實際的合併排序視覺化函數
-        // mergeSortVisualizer(workingArray); 
-        // 簡單顯示排序結果作為替代
-            workingArray.sort((a, b) => a - b);
-            renderArray(workingArray);
-            startBtn.disabled = false; resetBtn.disabled = false;
-    });
-
-    resetBtn.addEventListener('click', () => {
-        workingArray = [...initialArray]; renderArray(workingArray);
-    });
-</script>
+        // 網頁載入時先執行一次初始化
+        resetArray();
+    </script>
 </body>
 </html>
