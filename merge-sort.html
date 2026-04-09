@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>合併排序法視覺化</title>
+    <style>
+        /* CSS 樣式設定 */
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background-color: #f0f9ff; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 90%; max-width: 900px; margin-bottom: 20px; }
+        h2 { border-bottom: 2px solid #10b981; padding-bottom: 5px; color: #10b981; }
+        pre { background-color: #f1f5f9; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: monospace; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #10b981; color: white; }
+        
+        /* 視覺化圖表樣式 */
+        .array-container { display: flex; align-items: flex-end; height: 180px; margin: 20px 0; border-bottom: 2px solid #333; }
+        .bar { width: 25px; margin: 0 3px; background-color: #34d399; color: white; text-align: center; border-radius: 4px 4px 0 0; transition: height 0.2s, background-color 0.2s; font-size: 0.8rem; }
+        .controls { display: flex; gap: 15px; margin-top: 15px; }
+        button { padding: 10px 20px; cursor: pointer; background: #10b981; color: white; border: none; border-radius: 6px; font-size: 1rem; }
+        button:hover { background: #059669; }
+        button:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<!-- 一、操作原理區塊 -->
+<div class="section">
+    <h2>一、操作原理</h2>
+    <p>合併排序法是典型的分割治領(Divide and Conquer)演算法。它會先將陣列分割成最小的單元，然後再兩兩合併並排序，直到合併成一個完整的已排序陣列。</p>
+</div>
+
+<!-- 二、虛擬代碼區塊 -->
+<div class="section">
+    <h2>二、虛擬代碼</h2>
+    <pre>
+procedure mergeSort( A : list of sortable items )
+    if length(A) <= 1 then
+        return A
+    end if
+    
+    mid = length(A) / 2
+    left = mergeSort( A[0...mid-1] )
+    right = mergeSort( A[mid...end] )
+    
+    return merge( left, right )
+end procedure
+
+function merge( left, right )
+    result = list()
+    while left and right are not empty do
+        if left[0] <= right[0] then
+            add left[0] to result
+            remove left[0] from left
+        else
+            add right[0] to result
+            remove right[0] from right
+        end if
+    end while
+    
+    add remaining items in left or right to result
+    return result
+end function
+    </pre>
+</div>
+
+<!-- 三、複雜度分析區塊 -->
+<div class="section">
+    <h2>三、複雜度分析</h2>
+    <table>
+        <tr><th>項目</th><th>複雜度</th></tr>
+        <tr><td>平均時間複雜度</td><td>O(n log n)</td></tr>
+        <tr><td>最壞時間複雜度</td><td>O(n log n)</td></tr>
+        <tr><td>最好時間複雜度</td><td>O(n log n)</td></tr>
+        <tr><td>空間複雜度</td><td>O(n) (需要額外的空間來合併)</td></tr>
+    </table>
+</div>
+
+<!-- 四、動態視覺化區塊 -->
+<div class="section">
+    <h2>四、動態視覺化操作</h2>
+    <div class="array-container" id="array-container">
+        <!-- 長條圖將透過 JavaScript 產生在這裡 -->
+    </div>
+    <div class="controls">
+        <button id="start-btn">開始排序</button>
+        <button id="reset-btn">重設</button>
+    </div>
+</div>
+
+<script>
+    // JavaScript 視覺化與排序邏輯
+    const arrayContainer = document.getElementById('array-container');
+    const startBtn = document.getElementById('start-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const initialArray = [50, 20, 70, 10, 90, 40, 30, 80, 60];
+    let workingArray = [...initialArray];
+
+    function renderArray(array) {
+        arrayContainer.innerHTML = '';
+        array.forEach(value => {
+            const bar = document.createElement('div');
+            bar.classList.add('bar');
+            bar.style.height = `${value * 1.8}px`;
+            bar.textContent = value;
+            arrayContainer.appendChild(bar);
+        });
+    }
+
+    renderArray(workingArray);
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // 合併排序視覺化邏輯 (使用輔助陣列)
+    async function mergeSortVisualizer(arr, start, end) {
+        if (start >= end) return;
+
+        const mid = Math.floor((start + end) / 2);
+        
+        // 遞迴分割
+        await mergeSortVisualizer(arr, start, mid);
+        await mergeSortVisualizer(arr, mid + 1, end);
+        
+        // 標示正在合併的區間 (黃色)
+        const bars = document.getElementsByClassName('bar');
+        for(let i = start; i <= end; i++) {
+            bars[i].style.backgroundColor = '#fbbf24';
+        }
+        await sleep(200);
+
+        // 合併邏輯
+        let left = arr.slice(start, mid + 1);
+        let right = arr.slice(mid + 1, end + 1);
+        let i = 0, j = 0, k = start;
+
+        while (i < left.length && j < right.length) {
+            if (left[i] <= right[j]) {
+                arr[k] = left[i];
+                i++;
+            } else {
+                arr[k] = right[j];
+                j++;
+            }
+            // 更新畫面
+            bars[k].style.height = `${arr[k] * 1.8}px`;
+            bars[k].textContent = arr[k];
+            k++;
+            await sleep(100);
+        }
+
+        while (i < left.length) {
+            arr[k] = left[i];
+            bars[k].style.height = `${arr[k] * 1.8}px`;
+            bars[k].textContent = arr[k];
+            i++; k++;
+            await sleep(100);
+        }
+
+        while (j < right.length) {
+            arr[k] = right[j];
+            bars[k].style.height = `${arr[k] * 1.8}px`;
+            bars[k].textContent = arr[k];
+            j++; k++;
+            await sleep(100);
+        }
+        
+        // 恢復顏色 (綠色，表示這個區間已經局部排序好)
+        for(let i = start; i <= end; i++) {
+            bars[i].style.backgroundColor = '#10b981';
+        }
+    }
+
+    startBtn.addEventListener('click', async () => {
+        startBtn.disabled = true;
+        resetBtn.disabled = true;
+        await mergeSortVisualizer(workingArray, 0, workingArray.length - 1);
+        startBtn.disabled = false;
+        resetBtn.disabled = false;
+    });
+
+    resetBtn.addEventListener('click', () => {
+        workingArray = [...initialArray];
+        renderArray(workingArray);
+    });
+</script>
+
+</body>
+</html>
