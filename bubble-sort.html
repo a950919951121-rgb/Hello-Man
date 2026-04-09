@@ -223,12 +223,12 @@ end procedure
                 bars[i - 1].style.background = 'linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%)';
                 bars[i].style.background = 'linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%)';
             }
-            // 標示已排序完成的長條 (綠色風格)
+            
             bars[n - 1].style.background = 'linear-gradient(to bottom, #10b981 0%, #34d399 100%)';
             n--;
         } while (swapped);
         
-        // 確保所有長條最後都變綠色
+        
         for(let bar of bars) {
             bar.style.background = 'linear-gradient(to bottom, #10b981 0%, #34d399 100%)';
         }
